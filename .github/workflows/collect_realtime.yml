@@ -62,6 +62,21 @@ jobs:
         # Funciona globalmente (sem restrição de IP).
         # Dados horários via API (/estacao/dados/) retornam 204 fora do Brasil.
 
+      - name: Coletar precipitação satélite GPM/CHIRPS
+        env:
+          PYTHONPATH: ${{ github.workspace }}/code
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
+          NASA_USER:  ${{ secrets.NASA_USER }}
+          NASA_PASS:  ${{ secrets.NASA_PASS }}
+        run: |
+          cd ${{ github.workspace }}/code
+          python -m src.collectors.gpm_collector
+        continue-on-error: true
+        # Fontes (auto-seleção por prioridade):
+        #   1. GPM IMERG Early Run (NASA CMR + Earthdata auth) — se NASA_USER/NASA_PASS configurados
+        #   2. CHIRPS v2.0 global daily (público, sem auth) — fallback sempre disponível
+        # Saída: data/processed/gpm_precip_1d.parquet  (~17.700 pontos RS, 6 KB)
+
       - name: Coletar previsões Open-Meteo / NOAA
         env:
           PYTHONPATH: ${{ github.workspace }}/code/src
@@ -96,6 +111,7 @@ jobs:
           cp code/data/processed/inmet_historico_rs.parquet        data/processed/ 2>/dev/null || true
           cp code/data/forecasts/nwp_7days.parquet                 data/forecasts/ 2>/dev/null || true
           cp code/data/forecasts/nwp_7days_daily.parquet           data/forecasts/ 2>/dev/null || true
+          cp code/data/processed/gpm_precip_1d.parquet             data/processed/ 2>/dev/null || true
 
       - name: Commit e push dos dados atualizados
         run: |
