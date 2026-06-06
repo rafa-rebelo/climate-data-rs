@@ -7,7 +7,6 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
-  DB_PATH: data/climate.duckdb
   TZ: America/Sao_Paulo
 
 jobs:
@@ -25,71 +24,70 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Checkout código-fonte (dashboard)
+      - name: Checkout código-fonte → code/
         uses: actions/checkout@v4
         with:
           repository: rafa-rebelo/climate-dashboard-rs
           token: ${{ secrets.GH_TOKEN }}
-          path: _src
+          path: code
 
       - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: _src/requirements.txt
+          cache-dependency-path: code/requirements.txt
 
       - name: Instalar dependências
-        run: pip install -r _src/requirements.txt --quiet
+        run: pip install -r code/requirements.txt --quiet
 
       - name: Coletar ANA HidroWeb (níveis + chuva)
         env:
+          PYTHONPATH: ${{ github.workspace }}/code/src
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
           ANA_IDENTIFICADOR: ${{ secrets.ANA_IDENTIFICADOR }}
           ANA_SENHA:         ${{ secrets.ANA_SENHA }}
-          DB_PATH:           ${{ env.DB_PATH }}
-        run: |
-          cd _src
-          python -m collectors.ana_collector
+        run: python -m collectors.ana_collector
         continue-on-error: true
 
       - name: Coletar previsões Open-Meteo / NOAA
         env:
-          DB_PATH: ${{ env.DB_PATH }}
-        run: |
-          cd _src
-          python -m collectors.noaa_collector
+          PYTHONPATH: ${{ github.workspace }}/code/src
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
+          ANA_IDENTIFICADOR: ${{ secrets.ANA_IDENTIFICADOR }}
+          ANA_SENHA:         ${{ secrets.ANA_SENHA }}
+        run: python -m collectors.noaa_collector
         continue-on-error: true
 
       - name: Calcular acumulados de chuva
         env:
-          DB_PATH: ${{ env.DB_PATH }}
-        run: |
-          cd _src
-          python -m processors.rain_accumulator
+          PYTHONPATH: ${{ github.workspace }}/code/src
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
+        run: python -m processors.rain_accumulator
+        continue-on-error: true
 
       - name: Gerar relatório de progresso
         env:
-          DB_PATH: ${{ env.DB_PATH }}
-        run: |
-          cd _src
-          PYTHONPATH=src python -m utils.progress_tracker
+          PYTHONPATH: ${{ github.workspace }}/code/src
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
+        run: python -m utils.progress_tracker
+        continue-on-error: true
 
       - name: Copiar artefatos atualizados → repositório de dados
         run: |
-          cp _src/data/climate.duckdb                    data/climate.duckdb
-          cp _src/data/processed/accumulated_rain.parquet data/processed/
-          cp _src/data/processed/river_status.parquet     data/processed/
-          cp _src/data/processed/progress.json            data/processed/
-          cp _src/data/forecasts/nwp_7days.parquet        data/forecasts/ 2>/dev/null || true
-          cp _src/data/forecasts/nwp_7days_daily.parquet  data/forecasts/ 2>/dev/null || true
-          cp _src/JSONCRACK_FLUXOGRAMA.json               . 2>/dev/null || true
+          cp ${{ github.workspace }}/data/climate.duckdb                    data/climate.duckdb
+          cp ${{ github.workspace }}/data/processed/accumulated_rain.parquet data/processed/ 2>/dev/null || true
+          cp ${{ github.workspace }}/data/processed/river_status.parquet     data/processed/ 2>/dev/null || true
+          cp ${{ github.workspace }}/data/processed/progress.json            data/processed/ 2>/dev/null || true
+          cp ${{ github.workspace }}/data/forecasts/nwp_7days.parquet        data/forecasts/ 2>/dev/null || true
+          cp ${{ github.workspace }}/data/forecasts/nwp_7days_daily.parquet  data/forecasts/ 2>/dev/null || true
+          cp ${{ github.workspace }}/JSONCRACK_FLUXOGRAMA.json               .               2>/dev/null || true
 
       - name: Commit e push dos dados atualizados
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ JSONCRACK_FLUXOGRAMA.json 2>/dev/null || git add data/
-          # Só commita se houver mudança real
           git diff --cached --quiet && echo "Sem alterações — skip commit" && exit 0
           TIMESTAMP=$(TZ=America/Sao_Paulo date "+%Y-%m-%d %H:%M BRT")
           git commit -m "data: atualização automática ${TIMESTAMP}"
@@ -106,28 +104,36 @@ jobs:
     if: success()
 
     steps:
-      - name: Checkout código-fonte
+      - name: Checkout repositório de dados
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout código-fonte → code/
         uses: actions/checkout@v4
         with:
           repository: rafa-rebelo/climate-dashboard-rs
           token: ${{ secrets.GH_TOKEN }}
+          path: code
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
+          cache-dependency-path: code/requirements.txt
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt --quiet
+        run: pip install -r code/requirements.txt --quiet
 
       - name: Verificar alertas e notificar Telegram
         env:
+          PYTHONPATH: ${{ github.workspace }}/code/src
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
           TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          DB_PATH:          ${{ env.DB_PATH }}
         run: |
-          PYTHONPATH=src python -c "
+          python -c "
           from alerts.telegram_bot import run_alert_cycle
           run_alert_cycle()
           "
