@@ -75,13 +75,12 @@ jobs:
 
       - name: Copiar artefatos atualizados → repositório de dados
         run: |
-          cp ${{ github.workspace }}/data/climate.duckdb                    data/climate.duckdb
-          cp ${{ github.workspace }}/data/processed/accumulated_rain.parquet data/processed/ 2>/dev/null || true
-          cp ${{ github.workspace }}/data/processed/river_status.parquet     data/processed/ 2>/dev/null || true
-          cp ${{ github.workspace }}/data/processed/progress.json            data/processed/ 2>/dev/null || true
-          cp ${{ github.workspace }}/data/forecasts/nwp_7days.parquet        data/forecasts/ 2>/dev/null || true
-          cp ${{ github.workspace }}/data/forecasts/nwp_7days_daily.parquet  data/forecasts/ 2>/dev/null || true
-          cp ${{ github.workspace }}/JSONCRACK_FLUXOGRAMA.json               .               2>/dev/null || true
+          cp code/data/climate.duckdb                    data/climate.duckdb
+          cp code/data/processed/accumulated_rain.parquet data/processed/ 2>/dev/null || true
+          cp code/data/processed/river_status.parquet     data/processed/ 2>/dev/null || true
+          cp code/data/processed/progress.json            data/processed/ 2>/dev/null || true
+          cp code/data/forecasts/nwp_7days.parquet        data/forecasts/ 2>/dev/null || true
+          cp code/data/forecasts/nwp_7days_daily.parquet  data/forecasts/ 2>/dev/null || true
 
       - name: Commit e push dos dados atualizados
         run: |
