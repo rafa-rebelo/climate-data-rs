@@ -50,14 +50,17 @@ jobs:
         run: python -m collectors.ana_collector
         continue-on-error: true
 
-      - name: Atualizar inventário INMET (funciona de qualquer IP)
+      - name: Coletar INMET histórico RS (ZIP público — sem geo-restrição)
         env:
-          PYTHONPATH: ${{ github.workspace }}/code/src
+          PYTHONPATH: ${{ github.workspace }}/code
           DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
-        run: python -m collectors.inmet_collector --mode=inventory
+        run: |
+          cd ${{ github.workspace }}/code
+          python -m src.collectors.inmet_collector --mode=historico --dias=30
         continue-on-error: true
-        # Nota: dados horários INMET (--mode=full) retornam 204 fora do Brasil.
-        # Coletar localmente e fazer push manual para climate-data-rs.
+        # ZIP: https://portal.inmet.gov.br/uploads/dadoshistoricos/{ano}.zip
+        # Funciona globalmente (sem restrição de IP).
+        # Dados horários via API (/estacao/dados/) retornam 204 fora do Brasil.
 
       - name: Coletar previsões Open-Meteo / NOAA
         env:
@@ -90,6 +93,7 @@ jobs:
           cp code/data/processed/progress.json                     data/processed/ 2>/dev/null || true
           cp code/data/processed/inmet_stations_rs.parquet         data/processed/ 2>/dev/null || true
           cp code/data/processed/inmet_hourly.parquet              data/processed/ 2>/dev/null || true
+          cp code/data/processed/inmet_historico_rs.parquet        data/processed/ 2>/dev/null || true
           cp code/data/forecasts/nwp_7days.parquet                 data/forecasts/ 2>/dev/null || true
           cp code/data/forecasts/nwp_7days_daily.parquet           data/forecasts/ 2>/dev/null || true
 
