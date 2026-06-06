@@ -50,6 +50,15 @@ jobs:
         run: python -m collectors.ana_collector
         continue-on-error: true
 
+      - name: Atualizar inventário INMET (funciona de qualquer IP)
+        env:
+          PYTHONPATH: ${{ github.workspace }}/code/src
+          DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
+        run: python -m collectors.inmet_collector --mode=inventory
+        continue-on-error: true
+        # Nota: dados horários INMET (--mode=full) retornam 204 fora do Brasil.
+        # Coletar localmente e fazer push manual para climate-data-rs.
+
       - name: Coletar previsões Open-Meteo / NOAA
         env:
           PYTHONPATH: ${{ github.workspace }}/code/src
@@ -75,12 +84,14 @@ jobs:
 
       - name: Copiar artefatos atualizados → repositório de dados
         run: |
-          cp code/data/climate.duckdb                    data/climate.duckdb
-          cp code/data/processed/accumulated_rain.parquet data/processed/ 2>/dev/null || true
-          cp code/data/processed/river_status.parquet     data/processed/ 2>/dev/null || true
-          cp code/data/processed/progress.json            data/processed/ 2>/dev/null || true
-          cp code/data/forecasts/nwp_7days.parquet        data/forecasts/ 2>/dev/null || true
-          cp code/data/forecasts/nwp_7days_daily.parquet  data/forecasts/ 2>/dev/null || true
+          cp code/data/climate.duckdb                              data/climate.duckdb
+          cp code/data/processed/accumulated_rain.parquet          data/processed/ 2>/dev/null || true
+          cp code/data/processed/river_status.parquet              data/processed/ 2>/dev/null || true
+          cp code/data/processed/progress.json                     data/processed/ 2>/dev/null || true
+          cp code/data/processed/inmet_stations_rs.parquet         data/processed/ 2>/dev/null || true
+          cp code/data/processed/inmet_hourly.parquet              data/processed/ 2>/dev/null || true
+          cp code/data/forecasts/nwp_7days.parquet                 data/forecasts/ 2>/dev/null || true
+          cp code/data/forecasts/nwp_7days_daily.parquet           data/forecasts/ 2>/dev/null || true
 
       - name: Commit e push dos dados atualizados
         run: |
