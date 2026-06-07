@@ -16,7 +16,7 @@ jobs:
   collect:
     name: Coletar dados
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
 
     steps:
       - name: Checkout repositório de dados
