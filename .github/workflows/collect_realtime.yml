@@ -41,6 +41,26 @@ jobs:
       - name: Instalar dependências
         run: pip install -r code/requirements.txt --quiet
 
+      - name: Validar DuckDB (recriar se versão incompatível)
+        env:
+          DB_PATH: ${{ github.workspace }}/data/climate.duckdb
+        run: |
+          python -c "
+          import duckdb, os, sys
+          db = os.environ['DB_PATH']
+          if not os.path.exists(db):
+              print('DB nao existe ainda — sera criado pelos coletores.')
+              sys.exit(0)
+          try:
+              con = duckdb.connect(db, read_only=True)
+              con.close()
+              print('DuckDB OK — formato compativel com duckdb ' + duckdb.__version__)
+          except Exception as e:
+              print('DuckDB incompativel: ' + str(e))
+              print('Removendo banco antigo — sera recriado limpo pelos coletores.')
+              os.remove(db)
+          "
+
       - name: Coletar ANA HidroWeb (níveis + chuva)
         env:
           PYTHONPATH: ${{ github.workspace }}/code/src
@@ -102,16 +122,17 @@ jobs:
 
       - name: Copiar artefatos atualizados → repositório de dados
         run: |
-          cp code/data/climate.duckdb                              data/climate.duckdb
-          cp code/data/processed/accumulated_rain.parquet          data/processed/ 2>/dev/null || true
-          cp code/data/processed/river_status.parquet              data/processed/ 2>/dev/null || true
-          cp code/data/processed/progress.json                     data/processed/ 2>/dev/null || true
-          cp code/data/processed/inmet_stations_rs.parquet         data/processed/ 2>/dev/null || true
-          cp code/data/processed/inmet_hourly.parquet              data/processed/ 2>/dev/null || true
-          cp code/data/processed/inmet_historico_rs.parquet        data/processed/ 2>/dev/null || true
-          cp code/data/forecasts/nwp_7days.parquet                 data/forecasts/ 2>/dev/null || true
-          cp code/data/forecasts/nwp_7days_daily.parquet           data/forecasts/ 2>/dev/null || true
-          cp code/data/processed/gpm_precip_1d.parquet             data/processed/ 2>/dev/null || true
+          # O climate.duckdb já é gravado diretamente em data/ (via DB_PATH)
+          # — não precisa ser copiado, apenas incluído no git add abaixo.
+          cp code/data/processed/accumulated_rain.parquet   data/processed/ 2>/dev/null || true
+          cp code/data/processed/river_status.parquet       data/processed/ 2>/dev/null || true
+          cp code/data/processed/progress.json              data/processed/ 2>/dev/null || true
+          cp code/data/processed/inmet_stations_rs.parquet  data/processed/ 2>/dev/null || true
+          cp code/data/processed/inmet_hourly.parquet       data/processed/ 2>/dev/null || true
+          cp code/data/processed/inmet_historico_rs.parquet data/processed/ 2>/dev/null || true
+          cp code/data/forecasts/nwp_7days.parquet          data/forecasts/ 2>/dev/null || true
+          cp code/data/forecasts/nwp_7days_daily.parquet    data/forecasts/ 2>/dev/null || true
+          cp code/data/processed/gpm_precip_1d.parquet      data/processed/ 2>/dev/null || true
 
       - name: Commit e push dos dados atualizados
         run: |
@@ -131,7 +152,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: collect
     timeout-minutes: 3
-    if: success()
+    if: always()
 
     steps:
       - name: Checkout repositório de dados
