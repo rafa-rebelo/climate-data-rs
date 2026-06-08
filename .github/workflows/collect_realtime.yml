@@ -85,6 +85,20 @@ jobs:
         # Funciona globalmente (sem restrição de IP).
         # Dados horários via API (/estacao/dados/) retornam 204 fora do Brasil.
 
+      - name: Configurar .netrc NASA Earthdata (redirect URS auth)
+        env:
+          NASA_USER: ${{ secrets.NASA_USER }}
+          NASA_PASS: ${{ secrets.NASA_PASS }}
+        run: |
+          if [ -n "$NASA_USER" ] && [ -n "$NASA_PASS" ]; then
+            printf 'machine urs.earthdata.nasa.gov\nlogin %s\npassword %s\n' \
+              "$NASA_USER" "$NASA_PASS" > ~/.netrc
+            chmod 600 ~/.netrc
+            echo "netrc NASA: configurado"
+          else
+            echo "netrc NASA: sem credenciais — usando CHIRPS"
+          fi
+
       - name: Coletar precipitação satélite GPM/CHIRPS
         env:
           PYTHONPATH: ${{ github.workspace }}/code
