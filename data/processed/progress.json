@@ -1,6 +1,6 @@
 {
   "meta": {
-    "gerado_em": "2026-06-08T07:01:41Z",
+    "gerado_em": "2026-06-08T08:43:03Z",
     "versao": "2.0",
     "projeto": "Monitor Hidrometeorológico RS",
     "status_geral": "OPERACIONAL",
@@ -21,7 +21,7 @@
       },
       "rain_accumulated": {
         "registros": 101,
-        "ultima_entrada": "2026-06-08 04:01:41"
+        "ultima_entrada": "2026-06-08 05:43:02"
       },
       "forecasts": {
         "registros": 1680,
@@ -37,7 +37,7 @@
       },
       "river_status": {
         "registros": 4,
-        "ultima_entrada": "2026-06-08 07:01:41"
+        "ultima_entrada": "2026-06-08 08:43:03"
       },
       "water_quality": {
         "registros": 0,
@@ -71,7 +71,7 @@
     },
     "Open_Meteo_NWP": {
       "status": "✅ ATIVO",
-      "previsoes_disponiveis": 910,
+      "previsoes_disponiveis": 900,
       "localidades": 10,
       "valido_ate": "2026-06-11 23:00:00"
     }
@@ -82,7 +82,7 @@
       "parquet": {
         "exists": true,
         "size_kb": 8.9,
-        "modified_at": "2026-06-08 07:01 UTC"
+        "modified_at": "2026-06-08 08:43 UTC"
       },
       "estacoes_processadas": 101,
       "max_rain_24h_mm": NaN
@@ -92,7 +92,7 @@
       "parquet": {
         "exists": true,
         "size_kb": 5.8,
-        "modified_at": "2026-06-08 07:01 UTC"
+        "modified_at": "2026-06-08 08:43 UTC"
       },
       "segmentos_calculados": 4
     }
@@ -154,11 +154,11 @@
   "previsoes_nwp": {
     "localidades": 10,
     "modelos": 1,
-    "total_horarios": 910,
-    "valido_de": "2026-06-08 05:00:00",
+    "total_horarios": 900,
+    "valido_de": "2026-06-08 06:00:00",
     "valido_ate": "2026-06-11 23:00:00",
     "por_modelo": {
-      "openmeteo": 910
+      "openmeteo": 900
     }
   },
   "alertas": {
