@@ -41,6 +41,9 @@ jobs:
       - name: Instalar dependências
         run: pip install -r code/requirements.txt --quiet
 
+      - name: Forçar IPv4 (domínios .gov.br sem rota IPv6 nos runners ubuntu-24.04)
+        run: sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1 net.ipv6.conf.default.disable_ipv6=1
+
       - name: Validar DuckDB (recriar se versão incompatível)
         env:
           DB_PATH: ${{ github.workspace }}/data/climate.duckdb
