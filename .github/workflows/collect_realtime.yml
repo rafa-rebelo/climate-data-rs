@@ -70,6 +70,7 @@ jobs:
           DB_PATH:    ${{ github.workspace }}/data/climate.duckdb
           ANA_IDENTIFICADOR: ${{ secrets.ANA_IDENTIFICADOR }}
           ANA_SENHA:         ${{ secrets.ANA_SENHA }}
+          CF_WORKER_URL:     ${{ secrets.CF_WORKER_URL }}
         run: python -m collectors.ana_collector
         continue-on-error: true
 
