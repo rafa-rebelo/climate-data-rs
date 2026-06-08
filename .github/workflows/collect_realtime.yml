@@ -160,6 +160,7 @@ jobs:
           git diff --cached --quiet && echo "Sem alterações — skip commit" && exit 0
           TIMESTAMP=$(TZ=America/Sao_Paulo date "+%Y-%m-%d %H:%M BRT")
           git commit -m "data: atualização automática ${TIMESTAMP}"
+          git pull --rebase origin main
           git push
 
   # ─────────────────────────────────────────────────────────
