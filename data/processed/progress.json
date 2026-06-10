@@ -1,6 +1,6 @@
 {
   "meta": {
-    "gerado_em": "2026-06-10T00:10:28Z",
+    "gerado_em": "2026-06-10T04:44:32Z",
     "versao": "2.0",
     "projeto": "Monitor Hidrometeorológico RS",
     "status_geral": "OPERACIONAL",
@@ -21,11 +21,11 @@
       },
       "rain_accumulated": {
         "registros": 101,
-        "ultima_entrada": "2026-06-09 21:10:27"
+        "ultima_entrada": "2026-06-10 01:44:32"
       },
       "forecasts": {
-        "registros": 2640,
-        "ultima_entrada": "2026-06-09 21:10:26"
+        "registros": 2880,
+        "ultima_entrada": "2026-06-10 01:44:31"
       },
       "alerts_log": {
         "registros": 0,
@@ -37,7 +37,7 @@
       },
       "river_status": {
         "registros": 4,
-        "ultima_entrada": "2026-06-10 00:10:27"
+        "ultima_entrada": "2026-06-10 04:44:32"
       },
       "water_quality": {
         "registros": 0,
@@ -71,9 +71,9 @@
     },
     "Open_Meteo_NWP": {
       "status": "✅ ATIVO",
-      "previsoes_disponiveis": 1460,
+      "previsoes_disponiveis": 1660,
       "localidades": 10,
-      "valido_ate": "2026-06-15 23:00:00"
+      "valido_ate": "2026-06-16 23:00:00"
     }
   },
   "processamento": {
@@ -82,7 +82,7 @@
       "parquet": {
         "exists": true,
         "size_kb": 8.9,
-        "modified_at": "2026-06-10 00:10 UTC"
+        "modified_at": "2026-06-10 04:44 UTC"
       },
       "estacoes_processadas": 101,
       "max_rain_24h_mm": NaN
@@ -92,7 +92,7 @@
       "parquet": {
         "exists": true,
         "size_kb": 5.8,
-        "modified_at": "2026-06-10 00:10 UTC"
+        "modified_at": "2026-06-10 04:44 UTC"
       },
       "segmentos_calculados": 4
     }
@@ -154,11 +154,11 @@
   "previsoes_nwp": {
     "localidades": 10,
     "modelos": 1,
-    "total_horarios": 1460,
-    "valido_de": "2026-06-09 22:00:00",
-    "valido_ate": "2026-06-15 23:00:00",
+    "total_horarios": 1660,
+    "valido_de": "2026-06-10 02:00:00",
+    "valido_ate": "2026-06-16 23:00:00",
     "por_modelo": {
-      "openmeteo": 1460
+      "openmeteo": 1660
     }
   },
   "alertas": {
