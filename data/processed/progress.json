@@ -1,6 +1,6 @@
 {
   "meta": {
-    "gerado_em": "2026-06-11T22:58:49Z",
+    "gerado_em": "2026-06-12T00:18:36Z",
     "versao": "2.0",
     "projeto": "Monitor Hidrometeorológico RS",
     "status_geral": "OPERACIONAL",
@@ -71,7 +71,7 @@
     },
     "Open_Meteo_NWP": {
       "status": "✅ ATIVO",
-      "previsoes_disponiveis": 1480,
+      "previsoes_disponiveis": 1460,
       "localidades": 10,
       "valido_ate": "2026-06-17 23:00:00"
     }
@@ -154,11 +154,11 @@
   "previsoes_nwp": {
     "localidades": 10,
     "modelos": 1,
-    "total_horarios": 1480,
-    "valido_de": "2026-06-11 20:00:00",
+    "total_horarios": 1460,
+    "valido_de": "2026-06-11 22:00:00",
     "valido_ate": "2026-06-17 23:00:00",
     "por_modelo": {
-      "openmeteo": 1480
+      "openmeteo": 1460
     }
   },
   "alertas": {
